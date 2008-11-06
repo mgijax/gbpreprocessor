@@ -1,0 +1,50 @@
+#format: sh
+#
+#  Configuration for gbpreprocessor
+#
+#  This file sets up environment variables that are needed for 
+#  processing pre-processing files
+#
+###########################################################################
+
+# this dir holds the following dirs: logs, data, archive, reports
+FILEDIR=${DATALOADSOUTPUT}/genbank/genbank_gbpreprocessor
+
+export FILEDIR
+
+# Full path the the logs, reports, and archive directories
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+WORKDIR=${FILEDIR}/work
+ARCHIVEDIR=${FILEDIR}/archive
+
+export LOGDIR RPTDIR OUTPUTDIR WORKDIR ARCHIVEDIR
+
+#  Complete path name of the log files
+LOG_PROC=${LOGDIR}/genbank_gbpreprocessor.proc.log
+LOG_DIAG=${LOGDIR}/genbank_gbpreprocessor.diag.log
+LOG_CUR=${LOGDIR}/genbank_gbpreprocessor.cur.log
+LOG_VAL=${LOGDIR}/genbank_gbpreprocessor.val.log
+
+export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
+
+# true if get input files from RADAR
+APP_RADAR_INPUT=true
+
+# this load's login value for DB table CreatedBy and ModifiedBy
+JOBSTREAM=gbpreprocessor
+
+# APP_FilesMirrored.fileType for pre-processing
+# APP_FilesMirrored.fileType for new file name
+APP_FILETYPE1=GenBank_preprocess
+APP_FILETYPE2=GenBank
+
+# new file name
+APP_NEWFILENAME=${APP_FILETYPE2}.`date +%Y%m%d.%H%M`
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="GenBank Pre-Process Load"
+
+export APP_RADAR_INPUT JOBSTREAM APP_FILETYPE1 APP_FILETYPE2 MAIL_LOADNAME
+

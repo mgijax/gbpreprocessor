@@ -1,0 +1,123 @@
+#format: sh
+#
+#  Configuration common to preload
+#
+#  This file sets up environment variables that common to both
+#  GenBank and RefSeq preload
+# 
+###########################################################################
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+# establish name of master config and source it
+CONFIG_MASTER=${MGICONFIG}/master.config.sh
+
+export CONFIG_MASTER
+
+. ${CONFIG_MASTER}
+
+###########################################################################
+#
+#  JAVA SETTINGS
+#
+###########################################################################
+
+# allow 2G initial and max heap memory
+JAVARUNTIMEOPTS="-Xms2G -Xmx2G"    
+
+JAVA_LIB=${MGI_JAVALIB}/core.jar:${MGI_JAVALIB}/dbsmgd.jar:${MGI_JAVALIB}/dbsrdr.jar:${MGI_JAVALIB}/dla.jar
+
+CLASSPATH=.:${JAVA_LIB}:${COMMON_CLASSPATH}
+
+export JAVARUNTIMEOPTS JAVA_LIB CLASSPATH
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+#
+# input file settings
+#
+
+#  Frameworks expects the value 'STDIN' if jobstream script pipes input to
+#  the application.
+INFILE_NAME=STDIN
+
+# how files are piped to the application
+APP_CAT1="/usr/bin/gzcat"
+APP_CAT2="/usr/bin/gzip"
+
+export INFILE_NAME APP_CAT1 APP_CAT2
+
+#
+# general settings
+#
+
+# Send debug messages to the diagnostic log
+# toggle these to true as needed
+LOG_DEBUG=false
+DBDEBUG=false
+CACHE_DEBUG=false
+
+# logger factory class - allows classes to get their own loggers
+LOG_FACTORY=org.jax.mgi.shr.dla.log.DLALoggerFactory
+
+export LOG_DEBUG DBDEBUG CACHE_DEBUG LOG_FACTORY
+
+###########################################################################
+#
+#  BCP MANAGER SETTINGS BY DATABASE
+#
+###########################################################################
+
+#  Settings used to create a BCP manager for the MGD database
+MGD_BCP_PATH=${OUTPUTDIR}
+MGD_BCP_PREVENT_EXECUTE=false
+MGD_BCP_TRUNCATE_LOG=true
+MGD_BCP_DROP_INDEXES=false
+MGD_BCP_RECORD_STAMPING=false
+MGD_BCP_AUTO_FLUSH=false
+MGD_BCP_OK_TO_OVERWRITE=false
+
+export MGD_BCP_PATH MGD_BCP_PREVENT_EXECUTE MGD_BCP_TRUNCATE_LOG
+export MGD_BCP_DROP_INDEXES MGD_BCP_RECORD_STAMPING MGD_BCP_AUTO_FLUSH
+export MGD_BCP_OK_TO_OVERWRITE
+
+#  Settings used to create a BCP manager for the MGD database
+RADAR_BCP_PATH=${OUTPUTDIR}
+RADAR_BCP_PREVENT_EXECUTE=false
+RADAR_BCP_TRUNCATE_LOG=true
+RADAR_BCP_DROP_INDEXES=false
+RADAR_BCP_RECORD_STAMPING=false
+RADAR_BCP_AUTO_FLUSH=true
+RADAR_BCP_OK_TO_OVERWRITE=false
+
+export RADAR_BCP_PATH RADAR_BCP_PREVENT_EXECUTE RADAR_BCP_TRUNCATE_LOG
+export RADAR_BCP_DROP_INDEXES RADAR_BCP_RECORD_STAMPING RADAR_BCP_AUTO_FLUSH
+export RADAR_BCP_OK_TO_OVERWRITE
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  Installation directory
+INSTALLDIR=${GBPREPROCESSOR}
+
+export INSTALLDIR
+
+#  Recipient list for mailing the curation log file (comma-separated)
+#MAIL_LOG_CUR="mgiadmin"
+MAIL_LOG_CUR="lec"
+
+export MAIL_LOG_CUR

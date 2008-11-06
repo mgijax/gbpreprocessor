@@ -1,0 +1,110 @@
+#!/bin/sh
+
+#
+# Installation script for spseqload
+#
+# 1) cp genbank.config.default genbank.config
+# 2) cp refseq.config.default refseq.config
+# 3) cp gb_common.config.default gb_common.config
+# 2) Install 
+#
+
+Usage=Install
+
+#
+#  Function called when the install fails.
+#
+installFailed ()
+{
+    echo "Installation Failed: `date`"
+    exit 1
+}
+
+#
+#  Verify the arguments to the script, there shouldn't be any
+#
+if [ $# -ne 0 ]
+then
+    echo "Usage: ${Usage}"
+    installFailed
+fi
+
+#
+# Make sure config files exist
+#
+cd `dirname $0`
+
+# establish the three config files
+GB_CONFIG=genbank.config
+RS_CONFIG=refseq.config
+COMMON_CONFIG=gb_common.config
+
+# Make sure genbank.config file exists and source it
+if [ -r ${GB_CONFIG} ]
+then
+    echo "Source ${GB_CONFIG}"
+    . ${GB_CONFIG}
+else
+    echo "Cannot source configuration file: ${GB_CONFIG}"
+    installFailed
+fi
+
+# Make sure gb_common.config file exists and source it
+if [ -r ${COMMON_CONFIG} ]
+then
+    echo "Source ${COMMON_CONFIG}"
+    . ${COMMON_CONFIG}
+else
+    echo "Cannot source configuration file: ${COMMON_CONFIG}"
+    installFailed
+fi
+
+#
+# Check to see if this is a development installation
+#
+DEV=""
+if [ "${INSTALL_TYPE}" = "dev" ]
+then
+    DEV="-d"
+fi
+
+#
+# run DLAInstall for spseqload
+#
+echo 'running DLAINSTALL'
+${DLAINSTALL} ${DEV}
+
+#
+# Create the work directory if it doesn't exist.
+#
+if [ ! -d ${WORKDIR} ]
+then
+    mkdir -p ${WORKDIR}
+fi
+
+# Make sure refseq.config file exists and source it
+if [ -r ${RS_CONFIG} ]
+then
+    echo "Source ${RS_CONFIG}"
+    . ${RS_CONFIG}
+else
+    echo "Cannot source configuration file: ${RS_CONFIG}"
+    installFailed
+fi
+
+# source gb_common.config again
+. ${COMMON_CONFIG}
+
+#
+# Create the work directory if it doesn't exist.
+#
+if [ ! -d ${WORKDIR} ]
+then
+    mkdir -p ${WORKDIR}
+fi
+
+#
+# run DLAInstall for trseqload
+#
+${DLAINSTALL} ${DEV}
+
