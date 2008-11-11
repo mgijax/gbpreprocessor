@@ -148,41 +148,54 @@ then
 fi
 
 #
-# for each file in the work directory:
-# 	zip the new file
+# if files have been generated in the work directory
 #
-echo '\nZipping the new working files' | tee -a ${LOG_DIAG}
-for file in ${WORKDIR}/*
-do
-    ${APP_CAT2} ${file}
-    STAT=$?
-    checkStatus ${STAT} "${APP_CAT2}"
+#     for each file in the work directory:
+# 	    zip the new file
+#
+#     log the new files in the work directory
+#     copy new files to the output directory
+#
+#     move the working files to the output files (their final resting place)
+#
 
+echo '\nZipping the new working files' | tee -a ${LOG_DIAG}
+checkLS=`ls ${WORKDIR}`
+if [ "${checkLS}" != "" ]
+then
+    for file in ${WORKDIR}/*
+    do
+        ${APP_CAT2} ${file}
+        STAT=$?
+        checkStatus ${STAT} "${APP_CAT2}"
+
+        if [ ${STAT} -ne 0 ]
+        then
+            echo "${APP_CAT2} failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+	    exit 1
+        fi
+    done
+
+    #
+    # log the new files in the work directory
+    # copy new files to the output directory
+    #
+    echo '\nLogging the new working files' | tee -a ${LOG_DIAG}
+    ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
+    STAT=$?
+    checkStatus ${STAT} "logPreMirroredFiles.csh"
     if [ ${STAT} -ne 0 ]
     then
-        echo "${APP_CAT2} failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
-	exit 1
+        echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+        exit 1
     fi
-done
 
-#
-# log the new files in the work directory
-# copy new files to the output directory
-#
-echo '\nLogging the new working files' | tee -a ${LOG_DIAG}
-${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
-STAT=$?
-checkStatus ${STAT} "logPreMirroredFiles.csh"
-if [ ${STAT} -ne 0 ]
-then
-    echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
-    exit 1
+    #
+    # move the working files to the output files (their final resting place)
+    #
+    mv -f ${WORKDIR}/* ${OUTPUTDIR}
+
 fi
-
-#
-# move the working files to the output files (their final resting place)
-#
-mv -f ${WORKDIR}/* ${OUTPUTDIR}
 
 #
 # log the processed files
