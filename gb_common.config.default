@@ -117,7 +117,6 @@ INSTALLDIR=${GBPREPROCESSOR}
 export INSTALLDIR
 
 #  Recipient list for mailing the curation log file (comma-separated)
-#MAIL_LOG_CUR="mgiadmin"
-MAIL_LOG_CUR="lec"
+MAIL_LOG_PROC="mgiadmin"
 
-export MAIL_LOG_CUR
+export MAIL_LOG_PROC
