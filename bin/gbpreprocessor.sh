@@ -100,13 +100,13 @@ cleanDir ${WORKDIR}
 #
 # get the pre-processing files
 #
-echo '\nGetting files to Pre-Process' | tee -a ${LOG_DIAG}
+echo '\nGetting files to Pre-Process' | tee -a ${LOG_PROC}
 APP_INFILES=`${RADAR_DBUTILS}/bin/getFilesToProcess.csh ${RADAR_DBSCHEMADIR} ${JOBSTREAM} ${APP_FILETYPE1} 0`
 STAT=$?
 checkStatus ${STAT} "getFilesToProcess.csh"
 if [ ${STAT} -ne 0 ]
 then
-    echo "getFilesToProcess.csh failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+    echo "getFilesToProcess.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC}
     exit 1
 fi
 
@@ -115,7 +115,7 @@ fi
 #
 if [ "${APP_INFILES}" = "" ]
 then
-    echo "There are no pre-processing files to process" | tee -a ${LOG_DIAG} ${LOG_PROC}
+    echo "There are no pre-processing files to process" | tee -a ${LOG_PROC}
     shutDown
     exit 1
 fi
@@ -124,7 +124,7 @@ fi
 # set a split counter for the next available file name to use
 # run the splitter
 #
-echo '\nRunning the splitter' | tee -a ${LOG_DIAG}
+echo '\nRunning the splitter' | tee -a ${LOG_PROC}
 splitCounter=0
 checkLS=`ls ${OUTPUTDIR}`
 if [ "${checkLS}" != "" ]
@@ -143,7 +143,7 @@ STAT=$?
 checkStatus ${STAT} "GBRecordSplitter.py"
 if [ ${STAT} -ne 0 ]
 then
-    echo "GBRecordSplitter.py failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+    echo "GBRecordSplitter.py failed. Return status: ${STAT}" | tee -a ${LOG_PROC}
     exit 1
 fi
 
@@ -159,7 +159,7 @@ fi
 #     move the working files to the output files (their final resting place)
 #
 
-echo '\nZipping the new working files' | tee -a ${LOG_DIAG}
+echo '\nZipping the new working files' | tee -a ${LOG_PROC}
 checkLS=`ls ${WORKDIR}`
 if [ "${checkLS}" != "" ]
 then
@@ -171,7 +171,7 @@ then
 
         if [ ${STAT} -ne 0 ]
         then
-            echo "${APP_CAT2} failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+            echo "${APP_CAT2} failed. Return status: ${STAT}" | tee -a ${LOG_PROC}
 	    exit 1
         fi
     done
@@ -180,13 +180,13 @@ then
     # log the new files in the work directory
     # copy new files to the output directory
     #
-    echo '\nLogging the new working files' | tee -a ${LOG_DIAG}
+    echo '\nLogging the new working files' | tee -a ${LOG_PROC}
     ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
     STAT=$?
     checkStatus ${STAT} "logPreMirroredFiles.csh"
     if [ ${STAT} -ne 0 ]
     then
-        echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_DIAG} ${LOG_PROC}
+        echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC}
         exit 1
     fi
 
@@ -200,7 +200,7 @@ fi
 #
 # log the processed files
 #
-echo "Logging processed files ${APP_INFILES}" >> ${LOG_DIAG}
+echo "Logging processed files ${APP_INFILES}" | tee -a ${LOG_PROC}
 for file in ${APP_INFILES}
 do
     ${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} ${JOBKEY} ${file} ${APP_FILETYPE1}
