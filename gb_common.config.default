@@ -115,8 +115,3 @@ export RADAR_BCP_OK_TO_OVERWRITE
 INSTALLDIR=${GBPREPROCESSOR}
 
 export INSTALLDIR
-
-#  Recipient list for mailing the curation log file (comma-separated)
-MAIL_LOG_PROC="mgiadmin"
-
-export MAIL_LOG_PROC
