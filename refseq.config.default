@@ -15,7 +15,7 @@ export FILEDIR
 # Full path the the logs, reports, and archive directories
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
-OUTPUTDIR=${FILEDIR}/output
+OUTPUTDIR=/data/downloads/ftp.ncbi.nih.gov/refseq_gbpreprocessor/output
 WORKDIR=${FILEDIR}/work
 ARCHIVEDIR=${FILEDIR}/archive
 

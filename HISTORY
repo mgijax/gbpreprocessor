@@ -1,3 +1,10 @@
+TAG: gbpreprocessor-4-1-3-6
+DATE: 11/18/2008
+STAFF: lec
+CHANGES:
+1) TR9050 - prepocess gbseqload and refseqload input files
+2) moved OUTPUT files to /data/downloads/ftp.ncbi.nih.gov
+
 TAG: gbpreprocessor-4-1-3-5
 TAG: gbpreprocessor-4-1-3-4
 TAG: gbpreprocessor-4-1-3-3
