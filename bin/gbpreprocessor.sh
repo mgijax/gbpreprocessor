@@ -131,7 +131,7 @@ if [ "${checkLS}" != "" ]
 then
     for file in ${OUTPUTDIR}/*.gz
     do
-        splitCounter=`echo ${file} | cut -d"." -f2`
+        splitCounter=`echo ${file} | cut -d"." -f6`
     done
     splitCounter=`expr ${splitCounter} + 1`
 else
