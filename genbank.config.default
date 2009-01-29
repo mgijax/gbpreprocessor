@@ -18,8 +18,9 @@ RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=/data/downloads/ftp.ncbi.nih.gov/genbank_gbpreprocessor/output
 WORKDIR=${FILEDIR}/work
 ARCHIVEDIR=${FILEDIR}/archive
+SPLITCOUNTER=${OUTPUTDIR}/splitCounter
 
-export LOGDIR RPTDIR OUTPUTDIR WORKDIR ARCHIVEDIR
+export LOGDIR RPTDIR OUTPUTDIR WORKDIR ARCHIVEDIR SPLITCOUNTER
 
 #  Complete path name of the log files
 LOG_PROC=${LOGDIR}/genbank_gbpreprocessor.proc.log

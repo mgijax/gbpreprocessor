@@ -121,21 +121,20 @@ then
 fi
 
 #
-# set a split counter for the next available file name to use
-# run the splitter
+# update the split counter for the next available file number to use for the splitter
+#     . create the split counter if it does not exist
+#
+# then, run the splitter
 #
 echo '\nRunning the splitter' | tee -a ${LOG_PROC} ${LOG_DIAG}
-splitCounter=0
-checkLS=`ls ${OUTPUTDIR}`
-if [ "${checkLS}" != "" ]
+if [ ! -f ${SPLITCOUNTER} ]
 then
-    for file in ${OUTPUTDIR}/*.gz
-    do
-        splitCounter=`echo ${file} | cut -d"." -f6`
-    done
-    splitCounter=`expr ${splitCounter} + 1`
-else
     splitCounter=1
+    echo ${splitCounter} > ${SPLITCOUNTER}
+else
+    splitCounter=`cat ${SPLITCOUNTER}`
+    splitCounter=`expr ${splitCounter} + 1`
+    echo ${splitCounter} > ${SPLITCOUNTER}
 fi
 
 ${APP_CAT1} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m ${WORKDIR}/${APP_FILETYPE2} ${splitCounter} 
@@ -153,8 +152,7 @@ fi
 #     for each file in the work directory:
 # 	    zip the new file
 #
-#     log the new files in the work directory
-#     copy new files to the output directory
+#     log the zipped-ed file names into RADAR
 #
 #     move the working files to the output files (their final resting place)
 #
@@ -177,8 +175,7 @@ then
     done
 
     #
-    # log the new files in the work directory
-    # copy new files to the output directory
+    # log the zipped-ed file names into RADAR
     #
     echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
     ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
