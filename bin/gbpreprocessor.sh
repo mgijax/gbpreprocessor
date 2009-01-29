@@ -137,7 +137,7 @@ else
     echo ${splitCounter} > ${SPLITCOUNTER}
 fi
 
-${APP_CAT1} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m ${WORKDIR}/${APP_FILETYPE2} ${splitCounter} 
+${APP_CAT1} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m ${WORKDIR}/${APP_FILETYPE_SPLITTER} ${splitCounter} 
 STAT=$?
 checkStatus ${STAT} "GBRecordSplitter.py"
 if [ ${STAT} -ne 0 ]
@@ -152,7 +152,7 @@ fi
 #     for each file in the work directory:
 # 	    zip the new file
 #
-#     log the zipped-ed file names into RADAR
+#     for each file type, log the zipped-ed file names into RADAR
 #
 #     move the working files to the output files (their final resting place)
 #
@@ -175,17 +175,24 @@ then
     done
 
     #
-    # log the zipped-ed file names into RADAR
+    # for each file type, log the zipped-ed file names into RADAR
     #
-    echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
-    ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
-    STAT=$?
-    checkStatus ${STAT} "logPreMirroredFiles.csh"
-    if [ ${STAT} -ne 0 ]
-    then
-        echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
-        exit 1
-    fi
+    for fileType in ${APP_FILETYPE2}
+    do
+        echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
+        ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${fileType}
+        STAT=$?
+        checkStatus ${STAT} "logPreMirroredFiles.csh"
+        if [ ${STAT} -ne 0 ]
+        then
+            echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+            exit 1
+        fi
+    done
+
+    #
+    #
+    #
 
     #
     # move the working files to the output files (their final resting place)
