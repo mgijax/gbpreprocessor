@@ -53,8 +53,8 @@ export JAVARUNTIMEOPTS JAVA_LIB CLASSPATH
 INFILE_NAME=STDIN
 
 # how files are piped to the application
-APP_CAT1="/usr/bin/gzcat"
-APP_CAT2="/usr/bin/gzip"
+APP_CAT1="/usr/local/bin/gzcat"
+APP_CAT2="/usr/local/bin/gzip"
 
 export INFILE_NAME APP_CAT1 APP_CAT2
 

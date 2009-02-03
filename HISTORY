@@ -1,8 +1,10 @@
+TAG: gbpreprocessor-tr9451-2
 TAG: gbpreprocessor-tr9451-1
 DATE: 01/29/2009
 STAFF: lec
 CHANGES:
 1) add "GenBank_GTfilter" file type to zipped-file logging
+2) changed "/usr/bin/gz.." to "/usr/local/bin/"
 
 TAG: gbpreprocessor-tr9451-BP
 DATE: 01/29/2009
