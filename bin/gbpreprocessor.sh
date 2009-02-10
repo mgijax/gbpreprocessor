@@ -1,16 +1,50 @@
 #!/bin/sh 
-
 #
-#  Set up a log file for the shell script in case there is an error
-#  during configuration and initialization.
+#  gbpreprocessor.sh
+###########################################################################
 #
-#  select all pre-processing file that exists for the given file type (ex. GenBank_preprocess)
-#  run the GBRecordSplitter to create one "new" file that contains only mouse records
-#  zip the "new" file
-#  log the "new" file in APP_FileMirrored using non-pre-processing file type (ex. GenBank)
-#  log the pre-processed file into APP_FilesProcessed
+#  Purpose:  This script controls the execution of the
+#            genbank/refseq pre-processor load.
 #
+Usage="Usage: $0"
 #
+#  Env Vars:
+#
+#      See the configuration file
+#
+#  Inputs:
+#
+#      - Configuration file
+#
+#  Outputs:
+#
+#      - An archive file
+#      - Log files defined by the environment variables ${LOG_PROC},
+#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#      - ${WORKDIR} files are moved to ${OUTPUTDIR}
+#      - Exceptions written to standard error
+#      - Configuration and initialization errors are written to a log file
+#        for the shell script
+#
+#  Exit Codes:
+#
+#      0:  Successful completion
+#      1:  Fatal error occurred
+#      2:  Non-fatal error occurred
+#
+#  Assumes:  Nothing
+#
+#  Implementation:  Description
+#
+#      - select all pre-processing file that exists for the given file type (ex. GenBank_preprocess)
+#      - run the GBRecordSplitter to create one "new" file that contains only mouse records
+#      - zip the "new" file
+#      - log the "new" file in APP_FileMirrored using non-pre-processing file type (ex. GenBank)
+#      - log the pre-processed file into APP_FilesProcessed
+#
+#  Notes:  None
+#
+###########################################################################
 
 cd `dirname $0`/..
 LOG=`pwd`/gbpreprocessor.log
@@ -180,19 +214,15 @@ then
     for fileType in ${APP_FILETYPE2}
     do
         echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
-        ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${fileType}
+        ${RADAR_DBUTILS}/bin/logFileToProcessByDir.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${fileType}
         STAT=$?
-        checkStatus ${STAT} "logPreMirroredFiles.csh"
+        checkStatus ${STAT} "logFileToProcessByDir.csh"
         if [ ${STAT} -ne 0 ]
         then
-            echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+            echo "logFileToProcessByDir.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
             exit 1
         fi
     done
-
-    #
-    #
-    #
 
     #
     # move the working files to the output files (their final resting place)
