@@ -39,7 +39,7 @@ JOBSTREAM=gbpreprocessor
 # APP_FilesMirrored.fileType for pre-processing
 # APP_FilesMirrored.fileType for new file names ("a b c d..."
 APP_FILETYPE1=GenBank_preprocess
-APP_FILETYPE2="GenBank GenBank_GTfilter"
+APP_FILETYPE2="GenBank GenBank_GTFilter"
 APP_FILETYPE_SPLITTER=GenBank
 
 #  The name of the load for the subject of an email notification
