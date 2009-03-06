@@ -1,10 +1,23 @@
+TAG: gbpreprocessor-tr9451-6
+DATE: 03/06/2009
+STAFF: sc
+CHANGES:
+1) Install - worked using DLAInstall, but not running Install
+   on command line because the specific config file was being sourced
+   before the common
+2) gb_common.config.default - renamed APP_CAT1 to APP_CAT_METHOD and
+   renamed APP_CAT2 to APP_ZIP_METHOD
+3) bin/gbpreprocessor.sh - 
+   a) updated to use new  config names in 2)
+   b) broke all lines at 80 columns with '\'
+   c) corrected Usage
+
 TAG: gbpreprocessor-tr9451-5
 TAG: gbpreprocessor-tr9451-4
 TAG: gbpreprocessor-tr9451-3
 TAG: gbpreprocessor-tr9451-2
 TAG: gbpreprocessor-tr9451-1
 DATE: 02/10/2009
-DATE: 01/29/2009
 STAFF: lec
 CHANGES:
 1) add "GenBank_GTFilter" file type to zipped-file logging
