@@ -1,16 +1,51 @@
-#!/bin/sh 
-
+#!/bin/sh
 #
-#  Set up a log file for the shell script in case there is an error
-#  during configuration and initialization.
+#  gbpreprocessor.sh
+###########################################################################
 #
-#  select all pre-processing file that exists for the given file type (ex. GenBank_preprocess)
-#  run the GBRecordSplitter to create one "new" file that contains only mouse records
-#  zip the "new" file
-#  log the "new" file in APP_FileMirrored using non-pre-processing file type (ex. GenBank)
-#  log the pre-processed file into APP_FilesProcessed
+#  Purpose:  This script controls the execution of the
+#            genbank/refseq pre-processor
 #
+Usage="Usage: $0 configFile"
 #
+#  Env Vars:
+#
+#      See the configuration file
+#
+#  Inputs:
+#
+#      - Configuration file
+#
+#  Outputs:
+#
+#      - An archive file
+#      - Log files defined by the environment variables ${LOG_PROC},
+#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#      - ${WORKDIR} files are moved to ${OUTPUTDIR}
+#      - Exceptions written to standard error
+#      - Configuration and initialization errors are written to a log file
+#        for the shell script
+#
+#  Exit Codes:
+#
+#      0:  Successful completion
+#      1:  Fatal error occurred
+#      2:  Non-fatal error occurred
+#
+#  Assumes:  Nothing
+#
+#  Implementation:  Description
+#
+#      - select the files to process from radar (fileType=GenBank_preprocess)
+#      - run the GBRecordSplitter to create one "new" file that contains 
+# 	    only mouse records
+#      - zip the "new" file
+#      - log the "new" file in radar for gbseqload (fileType=GenBank)
+#      - log the processed files in radar now that we'ver processed them
+#
+#  Notes:  None
+#
+###########################################################################
 
 cd `dirname $0`/..
 LOG=`pwd`/gbpreprocessor.log
@@ -98,33 +133,34 @@ preload ${WORKDIR}
 cleanDir ${WORKDIR}
 
 #
-# get the pre-processing files
+# get the files to process
 #
-echo '\nGetting files to Pre-Process' | tee -a ${LOG_PROC} ${LOG_DIAG}
-APP_INFILES=`${RADAR_DBUTILS}/bin/getFilesToProcess.csh ${RADAR_DBSCHEMADIR} ${JOBSTREAM} ${APP_FILETYPE1} 0`
+echo '\nGetting files to process' | tee -a ${LOG_PROC} ${LOG_DIAG}
+APP_INFILES=`${RADAR_DBUTILS}/bin/getFilesToProcess.csh ${RADAR_DBSCHEMADIR} \
+    ${JOBSTREAM} ${APP_FILETYPE1} 0`
 STAT=$?
 checkStatus ${STAT} "getFilesToProcess.csh"
 if [ ${STAT} -ne 0 ]
 then
-    echo "getFilesToProcess.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+    echo "getFilesToProcess.csh failed. Return status: ${STAT}" | \
+       tee -a ${LOG_PROC} ${LOG_DIAG}
     exit 1
 fi
 
 #
-#  Make sure there is at least one pre-processing file to process
+#  Make sure there is at least one file to process
 #
 if [ "${APP_INFILES}" = "" ]
 then
-    echo "There are no pre-processing files to process" | tee -a ${LOG_PROC} ${LOG_DIAG}
+    echo "There are no files to process" | tee -a ${LOG_PROC} ${LOG_DIAG}
     shutDown
     exit 1
 fi
 
 #
-# update the split counter for the next available file number to use for the splitter
-#     . create the split counter if it does not exist
-#
-# then, run the splitter
+# update the counter for the next available file number to use 
+# for the record splitter
+# create the split counter if it does not exist, then run the splitter
 #
 echo '\nRunning the splitter' | tee -a ${LOG_PROC} ${LOG_DIAG}
 if [ ! -f ${SPLITCOUNTER} ]
@@ -137,12 +173,14 @@ else
     echo ${splitCounter} > ${SPLITCOUNTER}
 fi
 
-${APP_CAT1} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m ${WORKDIR}/${APP_FILETYPE2} ${splitCounter} 
+${APP_CAT_METHOD} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m \
+    ${WORKDIR}/${APP_FILETYPE_SPLITTER} ${splitCounter} 
 STAT=$?
 checkStatus ${STAT} "GBRecordSplitter.py"
 if [ ${STAT} -ne 0 ]
 then
-    echo "GBRecordSplitter.py failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+    echo "GBRecordSplitter.py failed. Return status: ${STAT}" | \
+	tee -a ${LOG_PROC} ${LOG_DIAG}
     exit 1
 fi
 
@@ -152,9 +190,9 @@ fi
 #     for each file in the work directory:
 # 	    zip the new file
 #
-#     log the zipped-ed file names into RADAR
+#     for each file type, log the zipped-ed file names into RADAR
 #
-#     move the working files to the output files (their final resting place)
+#     move the zipped file to the output directory (their final resting place)
 #
 
 echo '\nZipping the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
@@ -163,29 +201,35 @@ if [ "${checkLS}" != "" ]
 then
     for file in ${WORKDIR}/*
     do
-        ${APP_CAT2} ${file}
+        ${APP_ZIP_METHOD} ${file}
         STAT=$?
-        checkStatus ${STAT} "${APP_CAT2}"
+        checkStatus ${STAT} "${APP_ZIP_METHOD}"
 
         if [ ${STAT} -ne 0 ]
         then
-            echo "${APP_CAT2} failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+            echo "${APP_CAT2} failed. Return status: ${STAT}" | \
+		tee -a ${LOG_PROC} ${LOG_DIAG}
 	    exit 1
         fi
     done
 
     #
-    # log the zipped-ed file names into RADAR
+    # for each file type, log the zipped-ed file names into RADAR
     #
-    echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
-    ${RADAR_DBUTILS}/bin/logPreMirroredFiles.csh ${RADAR_DBSCHEMADIR} ${WORKDIR} ${OUTPUTDIR} ${APP_FILETYPE2}
-    STAT=$?
-    checkStatus ${STAT} "logPreMirroredFiles.csh"
-    if [ ${STAT} -ne 0 ]
-    then
-        echo "logPreMirroredFiles.csh failed. Return status: ${STAT}" | tee -a ${LOG_PROC} ${LOG_DIAG}
-        exit 1
-    fi
+    for fileType in ${APP_FILETYPE2}
+    do
+        echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
+        ${RADAR_DBUTILS}/bin/logFileToProcessByDir.csh ${RADAR_DBSCHEMADIR} \
+	    ${WORKDIR} ${OUTPUTDIR} ${fileType}
+        STAT=$?
+        checkStatus ${STAT} "logFileToProcessByDir.csh"
+        if [ ${STAT} -ne 0 ]
+        then
+            echo "logFileToProcessByDir.csh failed. Return status: ${STAT}" \
+		| tee -a ${LOG_PROC} ${LOG_DIAG}
+            exit 1
+        fi
+    done
 
     #
     # move the working files to the output files (their final resting place)
@@ -197,10 +241,11 @@ fi
 #
 # log the processed files
 #
-echo "Logging processed files ${APP_INFILES}" | tee -a ${LOG_PROC} ${LOG_DIAG}
+echo "\nLogging processed files ${APP_INFILES}" | tee -a ${LOG_PROC} ${LOG_DIAG}
 for file in ${APP_INFILES}
 do
-    ${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} ${JOBKEY} ${file} ${APP_FILETYPE1}
+    ${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} \
+	${JOBKEY} ${file} ${APP_FILETYPE1}
     STAT=$?
     checkStatus ${STAT} "logProcessedFile.csh"
 done

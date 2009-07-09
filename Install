@@ -40,14 +40,14 @@ RS_CONFIG=refseq.config
 COMMON_CONFIG=gb_common.config
 
 # Make sure genbank.config file exists and source it
-if [ -r ${GB_CONFIG} ]
-then
-    echo "Source ${GB_CONFIG}"
-    . ${GB_CONFIG}
-else
-    echo "Cannot source configuration file: ${GB_CONFIG}"
-    installFailed
-fi
+#if [ -r ${GB_CONFIG} ]
+#then
+#    echo "Source ${GB_CONFIG}"
+#    . ${GB_CONFIG}
+#else
+#    echo "Cannot source configuration file: ${GB_CONFIG}"
+#    installFailed
+#fi
 
 # Make sure gb_common.config file exists and source it
 if [ -r ${COMMON_CONFIG} ]
@@ -56,6 +56,17 @@ then
     . ${COMMON_CONFIG}
 else
     echo "Cannot source configuration file: ${COMMON_CONFIG}"
+    installFailed
+fi
+
+
+# Make sure genbank.config file exists and source it
+if [ -r ${GB_CONFIG} ]
+then
+    echo "Source ${GB_CONFIG}"
+    . ${GB_CONFIG}
+else
+    echo "Cannot source configuration file: ${GB_CONFIG}"
     installFailed
 fi
 
@@ -82,6 +93,9 @@ then
     mkdir -p ${WORKDIR}
 fi
 
+# source gb_common.config again
+. ${COMMON_CONFIG}
+
 # Make sure refseq.config file exists and source it
 if [ -r ${RS_CONFIG} ]
 then
@@ -92,9 +106,6 @@ else
     installFailed
 fi
 
-# source gb_common.config again
-. ${COMMON_CONFIG}
-
 #
 # Create the work directory if it doesn't exist.
 #
@@ -104,7 +115,7 @@ then
 fi
 
 #
-# run DLAInstall for trseqload
+# run DLAInstall for gbpreprocessor
 #
 ${DLAINSTALL} ${DEV}
 
