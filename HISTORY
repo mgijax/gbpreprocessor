@@ -1,3 +1,13 @@
+TAG: gbpreprocessor-4-3-2-1
+DATE: 01/13/2010
+STAFF: sc
+CHANGES: 
+1. refseq.config.default, genbank.config.default
+   added APP_INFILES to be configured when you dont' want
+   to get input from RADAR
+2. gbpreprocessor.sh - check APP_RADAR_INPUT (already in config
+   but not being used) and act accordingly
+
 TAG: gbpreprocessor-4-3-0-1
 DATE: 07/09/2009
 STAFF: sc

@@ -135,26 +135,40 @@ cleanDir ${WORKDIR}
 #
 # get the files to process
 #
-echo '\nGetting files to process' | tee -a ${LOG_PROC} ${LOG_DIAG}
-APP_INFILES=`${RADAR_DBUTILS}/bin/getFilesToProcess.csh ${RADAR_DBSCHEMADIR} \
-    ${JOBSTREAM} ${APP_FILETYPE1} 0`
-STAT=$?
-checkStatus ${STAT} "getFilesToProcess.csh"
-if [ ${STAT} -ne 0 ]
+
+if [ ${APP_RADAR_INPUT} = true ]
 then
-    echo "getFilesToProcess.csh failed. Return status: ${STAT}" | \
-       tee -a ${LOG_PROC} ${LOG_DIAG}
-    exit 1
+    echo 'Getting files to process' | tee -a ${LOG_PROC} ${LOG_DIAG}
+     # set the input files to empty string
+    APP_INFILES=""
+
+    # get input files
+    APP_INFILES=`${RADAR_DBUTILS}/bin/getFilesToProcess.csh \
+	${RADAR_DBSCHEMADIR}  ${JOBSTREAM} ${APP_FILETYPE1} 0`
+    STAT=$?
+    checkStatus ${STAT} "getFilesToProcess.csh"
+
+    # if no input files report and shutdown gracefully
+    if [ "${APP_INFILES}" = "" ]
+    then
+        echo "No files to process" | tee -a ${LOG_DIAG} ${LOG_PROC}
+        shutDown
+        exit 0
+    fi
+
+    echo 'Done getting files to Process' | tee -a ${LOG_DIAG}
+
 fi
 
-#
-#  Make sure there is at least one file to process
-#
+# if we get here then APP_INFILES not set in configuration this is an error
 if [ "${APP_INFILES}" = "" ]
 then
-    echo "There are no files to process" | tee -a ${LOG_PROC} ${LOG_DIAG}
-    shutDown
-    exit 1
+    # set STAT for endJobStream.py called from postload in shutDown
+    STAT=1
+    checkStatus ${STAT} "APP_RADAR_INPUT=${APP_RADAR_INPUT}. \
+	SEQ_LOAD_MODE=${SEQ_LOAD_MODE}. \
+	Check that APP_INFILES has been configured."
+
 fi
 
 #
@@ -238,17 +252,21 @@ then
 
 fi
 
-#
-# log the processed files
-#
-echo "\nLogging processed files ${APP_INFILES}" | tee -a ${LOG_PROC} ${LOG_DIAG}
-for file in ${APP_INFILES}
-do
-    ${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} \
-	${JOBKEY} ${file} ${APP_FILETYPE1}
-    STAT=$?
-    checkStatus ${STAT} "logProcessedFile.csh"
-done
+if [ ${APP_RADAR_INPUT} = true ]
+then
+    #
+    # log the processed files
+    #
+    echo "\nLogging processed files ${APP_INFILES}" | \
+	tee -a ${LOG_PROC} ${LOG_DIAG}
+    for file in ${APP_INFILES}
+    do
+	${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} \
+	    ${JOBKEY} ${file} ${APP_FILETYPE1}
+	STAT=$?
+	checkStatus ${STAT} "logProcessedFile.csh"
+    done
+fi
 
 #
 # run postload cleanup and email logs
@@ -256,4 +274,3 @@ done
 shutDown
 
 exit 0
-

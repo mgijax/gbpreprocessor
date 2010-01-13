@@ -33,6 +33,9 @@ export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 # true if get input files from RADAR
 APP_RADAR_INPUT=true
 
+# used when APP_RADAR_INPUT=false 
+APP_INFILES=...
+
 # this load's login value for DB table CreatedBy and ModifiedBy
 JOBSTREAM=gbpreprocessor
 
@@ -45,5 +48,5 @@ APP_FILETYPE_SPLITTER=GenBank
 #  The name of the load for the subject of an email notification
 MAIL_LOADNAME="GenBank Pre-Process Load"
 
-export APP_RADAR_INPUT JOBSTREAM APP_FILETYPE1 APP_FILETYPE2 APP_FILETYPE_SPLITTER MAIL_LOADNAME
+export APP_RADAR_INPUT APP_INFILES JOBSTREAM APP_FILETYPE1 APP_FILETYPE2 APP_FILETYPE_SPLITTER MAIL_LOADNAME
 
