@@ -1,4 +1,10 @@
-TAG: gbpreprocessor-4-3-2-1
+TAG: gbpreprocessor-4-3-2-2
+DATE: 02/24/2011
+STAFF: sc
+CHANGES: TR10601
+gbpreprocessor.sh - added new -v option to GBRecordSplitter.py call 
+
+tag: gbpreprocessor-4-3-2-1
 DATE: 01/13/2010
 STAFF: sc
 CHANGES: 

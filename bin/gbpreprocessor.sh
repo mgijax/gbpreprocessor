@@ -160,6 +160,7 @@ then
 
 fi
 
+
 # if we get here then APP_INFILES not set in configuration this is an error
 if [ "${APP_INFILES}" = "" ]
 then
@@ -187,7 +188,7 @@ else
     echo ${splitCounter} > ${SPLITCOUNTER}
 fi
 
-${APP_CAT_METHOD} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m \
+${APP_CAT_METHOD} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -m -v \
     ${WORKDIR}/${APP_FILETYPE_SPLITTER} ${splitCounter} 
 STAT=$?
 checkStatus ${STAT} "GBRecordSplitter.py"
