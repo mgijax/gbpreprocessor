@@ -62,6 +62,13 @@ export INFILE_NAME APP_CAT_METHOD APP_ZIP_METHOD
 # general settings
 #
 
+#
+# Max # records per file
+#
+RECORD_MAX=500000
+
+export RECORD_MAX
+
 # Send debug messages to the diagnostic log
 # toggle these to true as needed
 LOG_DEBUG=false
