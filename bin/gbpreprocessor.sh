@@ -177,7 +177,8 @@ fi
 # for the record splitter
 # create the split counter if it does not exist, then run the splitter
 #
-echo '\nRunning the splitter' | tee -a ${LOG_PROC} ${LOG_DIAG}
+echo '' | tee -a ${LOG_PROC} ${LOG_DIAG}
+echo 'Running the splitter' | tee -a ${LOG_PROC} ${LOG_DIAG}
 if [ ! -f ${SPLITCOUNTER} ]
 then
     splitCounter=1
@@ -210,7 +211,8 @@ fi
 #     move the zipped file to the output directory (their final resting place)
 #
 
-echo '\nZipping the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
+echo '' | tee -a ${LOG_PROC} ${LOG_DIAG}
+echo 'Zipping the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
 checkLS=`ls ${WORKDIR}`
 if [ "${checkLS}" != "" ]
 then
@@ -233,7 +235,8 @@ then
     #
     for fileType in ${APP_FILETYPE2}
     do
-        echo '\nLogging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
+        echo '' | tee -a ${LOG_PROC} ${LOG_DIAG}
+        echo 'Logging the new working files' | tee -a ${LOG_PROC} ${LOG_DIAG}
         ${RADAR_DBUTILS}/bin/logFileToProcessByDir.csh ${RADAR_DBSCHEMADIR} \
 	    ${WORKDIR} ${OUTPUTDIR} ${fileType}
         STAT=$?
@@ -258,8 +261,8 @@ then
     #
     # log the processed files
     #
-    echo "\nLogging processed files ${APP_INFILES}" | \
-	tee -a ${LOG_PROC} ${LOG_DIAG}
+    echo "" | tee -a ${LOG_PROC} ${LOG_DIAG}
+    echo "Logging processed files ${APP_INFILES}" | tee -a ${LOG_PROC} ${LOG_DIAG}
     for file in ${APP_INFILES}
     do
 	${RADAR_DBUTILS}/bin/logProcessedFile.csh ${RADAR_DBSCHEMADIR} \
