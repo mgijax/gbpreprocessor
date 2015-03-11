@@ -1,3 +1,9 @@
+TAG: gbpreprocessor-5-2-1-1
+DATE: 03/11/2015
+STAFF: dbm
+CHANGES: 
+1) gbpreprocessor.sh: Remove \n from echo statements
+
 TAG: gbpreprocessor-4-4-1-1
 DATE: 04/11/2011
 STAFF: sc
