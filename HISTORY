@@ -1,3 +1,10 @@
+TAG: gbpreprocessor-5-2-1-2
+DATE: 03/11/2015
+STAFF: dbm
+CHANGES: 
+1) genbank.config.default: Remove GenBank_GTFilter from file types to log in
+                           radar - genetrapload retirement
+
 TAG: gbpreprocessor-5-2-1-1
 DATE: 03/11/2015
 STAFF: dbm
