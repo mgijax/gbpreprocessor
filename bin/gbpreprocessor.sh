@@ -189,7 +189,7 @@ else
     echo ${splitCounter} > ${SPLITCOUNTER}
 fi
 
-${APP_CAT_METHOD} ${APP_INFILES} | ${DLA_UTILS}/GBRecordSplitter.py -r ${RECORD_MAX} \
+${APP_CAT_METHOD} ${APP_INFILES} | ${PYTHON} ${DLA_UTILS}/GBRecordSplitter.py -r ${RECORD_MAX} \
 	-m -v ${WORKDIR}/${APP_FILETYPE_SPLITTER} ${splitCounter} 
 STAT=$?
 checkStatus ${STAT} "GBRecordSplitter.py"
